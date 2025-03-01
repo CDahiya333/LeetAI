@@ -6,33 +6,32 @@
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
-  }
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
   },
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["https://leetcode.com/*"],
   "content_scripts": [
-  {
-    "matches": ["https://leetcode.com/problems/*"],
-    "js": ["src/content/content.ts"]
-  }
-],
+    {
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["assets/content.js"] 
+    }
+  ],
   "web_accessible_resources": [
     {
-      "resources": ["assets/*","worker.js" ],
+      "resources": ["assets/*", "worker.js"],
       "matches": ["https://leetcode.com/*"]
     }
   ],
-  "background":{
-    "service_worker":"../src/background/background.ts",
-    "type":"module"
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
   },
-
   "icons": {
-  "16": "icon.png",
-  "48": "icon.png",
-  "128": "icon.png"
-}
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
 }

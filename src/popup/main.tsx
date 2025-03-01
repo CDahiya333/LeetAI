@@ -1,59 +1,41 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: "../env" });
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import App from "./App";
+import "./index.css";
 
 // Check if we're in a Chrome extension environment
-const isChromeExtension = !!window.chrome && !!chrome.runtime && !!chrome.runtime.id;
+const isChromeExtension =
+  !!window.chrome && !!chrome.runtime && !!chrome.runtime.id;
 
 // Polyfill chrome.storage for development environment
 if (!isChromeExtension) {
-  window.chrome = {
-    ...window.chrome,
-    storage: {
-      sync: {
-        get: (keys, callback) => {
-          const result: Record<string, string | null> = {};
-          if (typeof keys === 'string') {
-            result[keys] = localStorage.getItem(keys);
-          } else if (Array.isArray(keys)) {
-            keys.forEach(key => {
-              result[key] = localStorage.getItem(key);
-            });
-          } else if (keys === null) {
-            // Get all items from localStorage
-            for (let i = 0; i < localStorage.length; i++) {
-              const key = localStorage.key(i);
-              if (key) {
-                result[key] = localStorage.getItem(key);
-              }
-            }
-          }
-          callback(result);
-        },
-        set: (items, callback) => {
-          Object.keys(items).forEach(key => {
-            localStorage.setItem(key, items[key]);
-          });
-          if (callback) callback();
-        },
-        remove: (keys, callback) => {
-          if (typeof keys === 'string') {
-            localStorage.removeItem(keys);
-          } else if (Array.isArray(keys)) {
-            keys.forEach(key => {
-              localStorage.removeItem(key);
-            });
-          }
-          if (callback) callback();
-        }
-      }
-    }
-  };
+  // ... your existing polyfill code ...
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+const supabaseUrl = process.env.YOUR_SUPABASE_URL;
+const supabaseAnonKey = process.env.YOUR_SUPABASE_ANON_KEY;
+let supabase: SupabaseClient;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase URL or Anon Key not found in .env');
+  // Initialize with a dummy client
+  // supabase = createClient("dummyUrl", "dummyKey");
+} else {
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const container = document.getElementById('root');
+  
+  if (container) {
+    const root = createRoot(container);
+    root.render(
+      <StrictMode>
+        <App supabase={supabase} />
+      </StrictMode>
+    );
+  } else {
+    // Handle the case where the root element is not found
+    console.error("Root element not found!");
+  }
+}

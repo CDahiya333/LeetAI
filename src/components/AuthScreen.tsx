@@ -1,29 +1,51 @@
 import React, { useState } from 'react';
-import { LogIn, User, Lock } from 'lucide-react';
+import { LogIn, User as LucidUser, Lock } from 'lucide-react';
+import { SupabaseClient, User  } from '@supabase/supabase-js'; // Correct import
 
 interface AuthScreenProps {
-  onLogin: (username: string, password: string) => void;
+  onLogin: (user: User) => void;
+  supabase: SupabaseClient; // Correct type
 }
 
-const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!username.trim()) {
-      setError('Username is required');
-      return;
+const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, supabase }) => {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null); // Error state
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message); // Set error message
+        // Handle signup error (e.g., display an error message)
+      } else {
+        const user = data.user;
+        const { error: metadataError } = await supabase.auth.updateUser({
+          data: { username },
+        });
+        if (metadataError) {
+          console.error("Metadata Update Error:", metadataError.message);
+          setError(metadataError.message);
+        } else {
+          if(user){ //Ensuring that user field is not Null
+            onLogin(user);
+          }
+        }
+      }
+    } catch (err) {
+      if(err instanceof Error){
+        setError(err.message);
+      }else{
+        setError("An Unknown Error Occured.")
+      }
     }
-    
-    if (!password.trim()) {
-      setError('Password is required');
-      return;
-    }
-    
-    onLogin(username, password);
   };
 
   return (
@@ -44,7 +66,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-500" />
+                <LucidUser className="h-5 w-5 text-gray-500" />
               </div>
               <input
                 id="username"
@@ -57,6 +79,25 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
             </div>
           </div>
           
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              Email
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <LogIn className="h-5 w-5 text-gray-500" />
+              </div>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)} // Email input
+                className="bg-gray-800 block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                placeholder="Enter your email"
+              />
+            </div>
+          </div>
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
               Password

@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({path:"../env"});
 import { VALID_MODELS, ValidModel } from "../constants/valid_models";
 import { HELPER_PROMPT } from "../constants/prompt";
 

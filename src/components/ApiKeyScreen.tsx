@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Key, Save, AlertCircle } from 'lucide-react';
 
 interface ApiKeyScreenProps {
-  apiKey: string;
+  apiKey: string |  null;
   onSave: (key: string) => void;
 }
 
 const ApiKeyScreen: React.FC<ApiKeyScreenProps> = ({ apiKey, onSave }) => {
-  const [key, setKey] = useState(apiKey);
+  const [key, setKey] = useState(apiKey || "");
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {

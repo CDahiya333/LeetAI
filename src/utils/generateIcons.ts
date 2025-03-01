@@ -1,8 +1,8 @@
 // This is a utility script to generate icon files
 // In a real project, you would create actual icon files instead
 
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Function to create a simple SVG icon as a placeholder
 function createSVGIcon(size: number): string {

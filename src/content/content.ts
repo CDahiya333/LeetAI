@@ -1,6 +1,6 @@
 import { trackPageNavigation } from "../utils/navigation";
 import { injectStyles } from "./styles";
-import { createChatUI, toggleChat } from "./ui";
+import { createChatUI } from "./ui";
 import { addMessage } from "./messages";
 import { showLoading, removeLoading } from "./loading";
 import { getProblemDescription } from "./problem";

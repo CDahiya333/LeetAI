@@ -3,44 +3,61 @@ import { BrainCircuit, LogOut, Key, Zap } from "lucide-react";
 import AuthScreen from "../components/AuthScreen";
 import ApiKeyScreen from "../components/ApiKeyScreen";
 import WelcomeScreen from "../components/WelcomeScreen";
-// import { saveChatMessage, fetchChatHistory } from "../utils/storage";
+import { SupabaseClient, User } from '@supabase/supabase-js';
+import ErrorScreen from "../components/ErrorScreen";
 
-function App() {
+interface AppProps {
+  supabase: SupabaseClient;
+}
+
+function App({ supabase }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
-  const [apiKey, setApiKey] = useState<string>("");
-  const [screen, setScreen] = useState<"welcome" | "auth" | "apiKey">("auth");
+  const [apiKey, setApiKey] = useState<string | null>("");
+  const [screen, setScreen] = useState<"welcome" | "auth" | "apiKey" | "error">("auth");
 
   useEffect(() => {
-    chrome.storage?.sync?.get(["user", "apiKey"], (result) => {
-      if (result.user) {
-        const storedUser = JSON.parse(result.user);
-        setUser(storedUser);
+    if (!supabase || !supabase.auth) {
+      console.error("Supabase instance is invalid!");
+      setScreen("error"); // Show an error screen
+      return;
+    }
+  
+    // Proceed with normal authentication flow
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUser({ username: session.user.user_metadata?.username || "" });
         setIsAuthenticated(true);
-        setScreen(result.apiKey ? "welcome" : "apiKey");
       }
-      if (result.apiKey) {
-        setApiKey(result.apiKey);
-      }
+      chrome.storage?.sync?.get(["apiKey"], (result) => {
+        setApiKey(result.apiKey || null);
+        setScreen(session ? (result.apiKey ? "welcome" : "apiKey") : "auth");
+      });
     });
-  }, []);
+  }, [supabase]); // Ensure Supabase dependency
 
-  const handleLogin = (username: string) => {
-    const userData = { username };
-    chrome.storage?.sync?.set({ user: JSON.stringify(userData) }, () => {
-      setUser(userData);
-      setIsAuthenticated(true);
-      setScreen(apiKey ? "welcome" : "apiKey");
+  const handleLogin = (user: User) => {
+    setUser({ username: user.user_metadata.username || "" });
+    setIsAuthenticated(true);
+    // After login, check for API key and route accordingly
+    chrome.storage?.sync?.get(["apiKey"], (result) => {
+      setScreen(result.apiKey ? "welcome" : "apiKey");
     });
   };
 
-  const handleLogout = () => {
-    chrome.storage?.sync?.remove(["user", "apiKey"], () => {
-      setUser(null);
-      setApiKey("");
-      setIsAuthenticated(false);
-      setScreen("auth");
-    });
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      chrome.storage?.sync?.remove(["user", "apiKey"], () => {
+        setUser(null);
+        setApiKey(null);
+        setIsAuthenticated(false);
+        setScreen("auth");
+      });
+    } catch (error) {
+      console.error("Logout Error:", error);
+      // Handle logout error
+    }
   };
 
   const handleSaveApiKey = (key: string) => {
@@ -51,8 +68,9 @@ function App() {
   };
 
   const renderScreen = () => {
-    if (!isAuthenticated) return <AuthScreen onLogin={handleLogin} />;
-    if (screen === "apiKey") return <ApiKeyScreen apiKey={apiKey} onSave={handleSaveApiKey} />;
+    if (!isAuthenticated) return <AuthScreen onLogin={handleLogin} supabase={supabase} />;
+    if (screen === "apiKey") return <ApiKeyScreen apiKey={apiKey || ""} onSave={handleSaveApiKey} />;
+    if (screen === "error") return <ErrorScreen message="Supabase instance is invalid." />; 
     return <WelcomeScreen username={user?.username || ""} />;
   };
 
