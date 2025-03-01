@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "LeetAI",
+  "version": "1.0.0",
+  "description": "Helps people's DSA journey easier by providing hints and code solutions.",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["https://leetcode.com/*"],
+  "content_scripts": [
+  {
+    "matches": ["https://leetcode.com/problems/*"],
+    "js": ["src/content/content.ts"]
+  }
+],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*","worker.js" ],
+      "matches": ["https://leetcode.com/*"]
+    }
+  ],
+  "background":{
+    "service_worker":"../src/background/background.ts",
+    "type":"module"
+  },
+
+  "icons": {
+  "16": "icon.png",
+  "48": "icon.png",
+  "128": "icon.png"
+}
+}
