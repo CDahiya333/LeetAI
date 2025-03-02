@@ -126,9 +126,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, supabase }) => {
           </button>
         </form>
         
-        <p className="mt-4 text-sm text-gray-400 text-center">
-          Note: This is a demo login. No actual authentication is performed.
-        </p>
       </div>
     </div>
   );

@@ -1,41 +1,26 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: "../env" });
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import App from "./App";
 import "./index.css";
 
-// Check if we're in a Chrome extension environment
-const isChromeExtension =
-  !!window.chrome && !!chrome.runtime && !!chrome.runtime.id;
+// Hardcoded Supabase credentials for Chrome extension
+// In a production app, you might want to use a more secure approach
+const supabaseUrl = "https://asiyptxldlpdmtarcxbq.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaXlwdHhsZGxwZG10YXJjeGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NTcwNjYsImV4cCI6MjA1NjQzMzA2Nn0.Xyedt985RkrZiPuaQ-HRQSzo2gEt44YV7UBIjFGsp7M";
 
-// Polyfill chrome.storage for development environment
-if (!isChromeExtension) {
-  // ... your existing polyfill code ...
-}
+// Initialize Supabase client
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-const supabaseUrl = process.env.YOUR_SUPABASE_URL;
-const supabaseAnonKey = process.env.YOUR_SUPABASE_ANON_KEY;
-let supabase: SupabaseClient;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase URL or Anon Key not found in .env');
-  // Initialize with a dummy client
-  // supabase = createClient("dummyUrl", "dummyKey");
+// Render the app
+const container: HTMLElement | null = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <StrictMode>
+      <App supabase={supabase} />
+    </StrictMode>
+  );
 } else {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
-  const container = document.getElementById('root');
-  
-  if (container) {
-    const root = createRoot(container);
-    root.render(
-      <StrictMode>
-        <App supabase={supabase} />
-      </StrictMode>
-    );
-  } else {
-    // Handle the case where the root element is not found
-    console.error("Root element not found!");
-  }
+  console.error("Root element not found!");
 }

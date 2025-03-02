@@ -1,6 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as dotenv from "dotenv";
-dotenv.config({path:"../env"});
 import { VALID_MODELS, ValidModel } from "../constants/valid_models";
 import { HELPER_PROMPT } from "../constants/prompt";
 
@@ -13,6 +11,8 @@ export function handleMessage(
   },
   sendResponse: (response: string) => void
 ): void {
+  console.log("Processing message:", message.type);
+  
   // Type guard to check if message.modelName is a ValidModel
   if (VALID_MODELS.some((model) => model.name === message.modelName)) {
     fetchAIResponse(
@@ -20,14 +20,40 @@ export function handleMessage(
       message.problemDescription,
       message.modelName as ValidModel
     )
-      .then((aiResponse: string) => sendResponse(aiResponse)) // Extract the string
-      .catch((error) => sendResponse(`Error: ${error.message}`));
+      .then((aiResponse: string) => {
+        console.log("AI response received");
+        sendResponse(aiResponse);
+      })
+      .catch((error) => {
+        console.error("AI response error:", error);
+        sendResponse(`Error: ${error.message}`);
+      });
   } else {
+    console.error("Invalid model name:", message.modelName);
     sendResponse(`Error: Invalid model name '${message.modelName}'.`);
   }
 }
 
-// Mock function (replace with actual API request)
+// Fetch API key from Chrome storage
+async function getApiKeyFromStorage(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["apiKey"], (result) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error("Failed to get API key from storage: " + chrome.runtime.lastError.message));
+        return;
+      }
+      
+      if (!result.apiKey) {
+        reject(new Error("API key not found in storage. Please add your API key in the extension popup."));
+        return;
+      }
+      
+      resolve(result.apiKey);
+    });
+  });
+}
+
+// Fetch AI response
 async function fetchAIResponse(
   userMessage: string,
   problemDescription: string,
@@ -38,6 +64,7 @@ async function fetchAIResponse(
     console.log("Model Support Not Added");
     throw new Error(`Model '${modelName}' not found`);
   }
+  
   // Constructing the Prompt
   const prompt = HELPER_PROMPT.replace(
     "{{problemDescription}}",
@@ -56,20 +83,29 @@ async function fetchAIResponse(
 
 async function fetchGeminiResponse(curatedPrompt: string): Promise<string> {
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+    // Get API key from storage instead of environment variables
+    const apiKey = await getApiKeyFromStorage();
+    
+    console.log("Initializing Gemini with API key");
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const prompt = curatedPrompt;
-    const result = await model.generateContent(prompt);
+    
+    console.log("Sending prompt to Gemini");
+    const result = await model.generateContent(curatedPrompt);
     const response = await result.response;
     const text = response.text();
+    
+    console.log("Received response from Gemini");
     return text;
   } catch (error: unknown) {
+    console.error("Gemini API error:", error);
+    
     if (error instanceof Error) {
       // Now you can safely access error.message
       throw new Error(`Gemini API Error: ${error.message}`);
     } else {
       // Handle cases where the error is not an Error object
-      throw new Error("An unknown error occurred.");
+      throw new Error("An unknown error occurred with the Gemini API.");
     }
   }
 }

@@ -13,64 +13,121 @@ interface AppProps {
 function App({ supabase }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
-  const [apiKey, setApiKey] = useState<string | null>("");
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const [screen, setScreen] = useState<"welcome" | "auth" | "apiKey" | "error">("auth");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!supabase || !supabase.auth) {
-      console.error("Supabase instance is invalid!");
-      setScreen("error"); // Show an error screen
+    console.log("App component mounted");
+    
+    // Validate Supabase instance
+    if (!supabase || typeof supabase.auth?.getSession !== 'function') {
+      console.error("Supabase instance is invalid or not properly initialized");
+      setError("Supabase client initialization failed");
+      setScreen("error");
       return;
     }
-  
-    // Proceed with normal authentication flow
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setUser({ username: session.user.user_metadata?.username || "" });
-        setIsAuthenticated(true);
+    
+    // Check for existing session
+    const checkSession = async () => {
+      try {
+        console.log("Checking for existing session...");
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session error:", error);
+          setError("Failed to retrieve session: " + error.message);
+          setScreen("error");
+          return;
+        }
+        
+        // Get API key from Chrome storage
+        chrome.storage.local.get(["apiKey"], (result) => {
+          console.log("Retrieved from storage:", result);
+          setApiKey(result.apiKey || null);
+          
+          if (data.session) {
+            // User is authenticated
+            console.log("User authenticated:", data.session.user);
+            setUser({ 
+              username: data.session.user.user_metadata?.username || 
+                        data.session.user.email?.split('@')[0] || 
+                        "User" 
+            });
+            setIsAuthenticated(true);
+            setScreen(result.apiKey ? "welcome" : "apiKey");
+          } else {
+            // No session, show auth screen
+            console.log("No session found, showing auth screen");
+            setScreen("auth");
+          }
+        });
+      } catch (err) {
+        console.error("Unexpected error during session check:", err);
+        setError("An unexpected error occurred while checking your session");
+        setScreen("error");
       }
-      chrome.storage?.sync?.get(["apiKey"], (result) => {
-        setApiKey(result.apiKey || null);
-        setScreen(session ? (result.apiKey ? "welcome" : "apiKey") : "auth");
-      });
-    });
-  }, [supabase]); // Ensure Supabase dependency
+    };
+    
+    checkSession();
+  }, [supabase]);
 
   const handleLogin = (user: User) => {
-    setUser({ username: user.user_metadata.username || "" });
+    console.log("Login successful:", user);
+    const username = user.user_metadata?.username || user.email?.split('@')[0] || "User";
+    setUser({ username });
     setIsAuthenticated(true);
+    
     // After login, check for API key and route accordingly
-    chrome.storage?.sync?.get(["apiKey"], (result) => {
+    chrome.storage.local.get(["apiKey"], (result) => {
+      setApiKey(result.apiKey || null);
       setScreen(result.apiKey ? "welcome" : "apiKey");
     });
   };
 
   const handleLogout = async () => {
     try {
+      console.log("Logging out...");
       await supabase.auth.signOut();
-      chrome.storage?.sync?.remove(["user", "apiKey"], () => {
+      
+      // Clear user data from storage
+      chrome.storage.local.remove(["apiKey"], () => {
         setUser(null);
         setApiKey(null);
         setIsAuthenticated(false);
         setScreen("auth");
+        console.log("Logout complete");
       });
     } catch (error) {
       console.error("Logout Error:", error);
-      // Handle logout error
+      setError("Failed to sign out. Please try again.");
     }
   };
 
   const handleSaveApiKey = (key: string) => {
-    chrome.storage?.sync?.set({ apiKey: key }, () => {
+    console.log("Saving API key...");
+    chrome.storage.local.set({ apiKey: key }, () => {
       setApiKey(key);
       setScreen("welcome");
+      console.log("API key saved");
     });
   };
 
   const renderScreen = () => {
-    if (!isAuthenticated) return <AuthScreen onLogin={handleLogin} supabase={supabase} />;
-    if (screen === "apiKey") return <ApiKeyScreen apiKey={apiKey || ""} onSave={handleSaveApiKey} />;
-    if (screen === "error") return <ErrorScreen message="Supabase instance is invalid." />; 
+    console.log("Rendering screen:", screen, "isAuthenticated:", isAuthenticated);
+    
+    if (screen === "error") {
+      return <ErrorScreen message={error || "An unknown error occurred"} />;
+    }
+    
+    if (!isAuthenticated) {
+      return <AuthScreen onLogin={handleLogin} supabase={supabase} />;
+    }
+    
+    if (screen === "apiKey") {
+      return <ApiKeyScreen apiKey={apiKey || ""} onSave={handleSaveApiKey} />;
+    }
+    
     return <WelcomeScreen username={user?.username || ""} />;
   };
 
@@ -83,10 +140,10 @@ function App({ supabase }: AppProps) {
         </h1>
         {isAuthenticated && (
           <div className="flex space-x-2">
-            <button onClick={() => setScreen("apiKey")} className="p-1 text-gray-300 hover:text-white" title="Configure API Key">
+            <button type="button" onClick={() => setScreen("apiKey")} className="p-1 text-gray-300 hover:text-white" title="Configure API Key">
               <Key className="w-5 h-5" />
             </button>
-            <button onClick={handleLogout} className="p-1 text-gray-300 hover:text-white" title="Logout">
+            <button type="button" onClick={handleLogout} className="p-1 text-gray-300 hover:text-white" title="Logout">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
