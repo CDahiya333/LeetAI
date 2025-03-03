@@ -1,5 +1,5 @@
 import { removeLoading, showLoading } from "./loading";
-
+// import { VALID_MODELS } from "../constants/valid_models";
 console.log("LeetAI content script loaded and running!");
 
 interface SendMessage {
@@ -189,10 +189,28 @@ function createChatUI(): void {
     </div>
   `;
   container.appendChild(chat);
-
+  // populateModelSelect();
   setupEventListeners();
 }
+// function populateModelSelect(): void {
+//   console.log("populateModelSelect called, VALID_MODELS:", VALID_MODELS);
+//   const selectElement = document.getElementById("leetai-model-select") as HTMLSelectElement | null;
+//   if (!selectElement) {
+//     console.error("Model select element not found");
+//     return;
+//   }
 
+//   // Clear any existing options
+//   selectElement.innerHTML = "";
+
+//   // Append an option for each valid model
+//   VALID_MODELS.forEach(model => {
+//     const option = document.createElement("option");
+//     option.value = model.name; // e.g. 'openai_4o' or 'gemini_flash'
+//     option.text = model.display;
+//     selectElement.appendChild(option);
+//   });
+// }
 // --------------------
 // Event Listeners Setup
 // --------------------
@@ -258,7 +276,7 @@ async function sendMessage(): Promise<void> {
     const problemDescription = await getProblemDescription();
     // Default model is gemini-2.0-flash if none selected
     const modelSelect = document.getElementById("leetai-model-select") as HTMLSelectElement;
-    const modelName = modelSelect?.value || "gemini-2.0-flash";
+    const modelName = modelSelect?.value || "gemini_flash";
 
     const payload: SendMessage = {
       type: "SEND_MESSAGE",

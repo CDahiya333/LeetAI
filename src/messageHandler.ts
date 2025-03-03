@@ -1,6 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { VALID_MODELS, ValidModel } from "./constants/valid_models";
 import { HELPER_PROMPT } from "./constants/prompt";
+import MarkdownIt from "markdown-it";
+
+function formatMarkdown(text: string): string {
+  const md = new MarkdownIt({ html: true, linkify: true });
+  return md.render(text);
+}
+
 
 export function handleMessage(
   message: {
@@ -94,9 +101,10 @@ async function fetchGeminiResponse(curatedPrompt: string): Promise<string> {
     const result = await model.generateContent(curatedPrompt);
     const response = await result.response;
     const text = response.text();
+    const formattedResponse = formatMarkdown(text);
     
     console.log("Received response from Gemini");
-    return text;
+    return formattedResponse;
   } catch (error: unknown) {
     console.error("Gemini API error:", error);
     
