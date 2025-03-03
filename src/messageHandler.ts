@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { VALID_MODELS, ValidModel } from "../constants/valid_models";
-import { HELPER_PROMPT } from "../constants/prompt";
+import { VALID_MODELS, ValidModel } from "./constants/valid_models";
+import { HELPER_PROMPT } from "./constants/prompt";
 
 export function handleMessage(
   message: {

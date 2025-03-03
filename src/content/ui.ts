@@ -3,10 +3,25 @@ import { showLoading, removeLoading } from "./loading";
 import { getProblemDescription } from "./problem";
 import { VALID_MODELS } from "../constants/valid_models";
 
-export function createChatUI() {
-  const container = document.createElement("div");
-  container.id = "leetai-container";
-  document.body.appendChild(container);
+type Model = {
+  name: string;
+  display: string;
+};
+
+export function createChatUI(): void {
+  let container = document.getElementById("leetai-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "leetai-container";
+    document.body.appendChild(container);
+  }
+
+  if (document.getElementById("leetai-chat")) {
+    console.log("Chat UI already exists, skipping creation");
+    return;
+  }
+
+  console.log("Creating chat UI");
 
   // Floating button
   const button = document.createElement("div");
@@ -31,66 +46,82 @@ export function createChatUI() {
     </div>
   `;
   container.appendChild(chat);
-  function populateModelDropdown() {
-    const selectElement = document.getElementById(
-      "leetai-model-select"
-    ) as HTMLSelectElement;
 
-    for (const model of VALID_MODELS) {
-      const optionElement = document.createElement("option");
-      optionElement.value = model.name;
-      optionElement.text = model.display;
-      selectElement.add(optionElement);
-    }
-  }
-  document.addEventListener("DOMContentLoaded", populateModelDropdown);
-  button.addEventListener("click", toggleChat);
-  document
-    .getElementById("leetai-chat-close")
-    ?.addEventListener("click", toggleChat);
-  document
-    .getElementById("leetai-chat-send")
-    ?.addEventListener("click", sendMessage);
+  populateModelDropdown();
+  setupEventListeners();
 }
 
-export function toggleChat() {
+function populateModelDropdown(): void {
+  const selectElement = document.getElementById("leetai-model-select") as HTMLSelectElement | null;
+  if (!selectElement) {
+    console.error("Model select element not found");
+    return;
+  }
+
+  selectElement.innerHTML = "";
+
+  VALID_MODELS.forEach((model: Model) => {
+    const optionElement = document.createElement("option");
+    optionElement.value = model.name;
+    optionElement.text = model.display;
+    selectElement.add(optionElement);
+  });
+}
+
+function setupEventListeners(): void {
+  const button = document.getElementById("leetai-button");
+  const closeButton = document.getElementById("leetai-chat-close");
+  const sendButton = document.getElementById("leetai-chat-send");
+  const inputField = document.getElementById("leetai-chat-input") as HTMLInputElement | null;
+
+  button?.addEventListener("click", toggleChat);
+  closeButton?.addEventListener("click", toggleChat);
+  sendButton?.addEventListener("click", sendMessage);
+
+  inputField?.addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  });
+}
+
+export function toggleChat(): void {
   const chat = document.getElementById("leetai-chat");
   if (chat) {
     chat.classList.toggle("hidden");
     if (!chat.classList.contains("hidden")) {
-      (
-        document.getElementById("leetai-chat-input") as HTMLInputElement
-      )?.focus();
+      const inputField = document.getElementById("leetai-chat-input") as HTMLInputElement | null;
+      inputField?.focus();
     }
   }
 }
 
-function sendMessage() {
-  const input = document.getElementById(
-    "leetai-chat-input"
-  ) as HTMLInputElement;
+async function sendMessage(): Promise<void> {
+  const input = document.getElementById("leetai-chat-input") as HTMLInputElement | null;
+  if (!input) return;
+
   const message = input.value.trim();
   if (!message) return;
 
   addMessage("user", message);
   input.value = "";
-
   const loadingElement = showLoading();
-  const problemDescription = getProblemDescription();
-  const modelName = (
-    document.getElementById("leetai-model-select") as HTMLSelectElement
-  ).value;
 
-  chrome.runtime.sendMessage(
-    {
-      type: "SEND_MESSAGE",
-      message,
-      problemDescription,
-      modelName,
-    },
-    (response: string) => {
-      removeLoading(loadingElement);
-      addMessage("ai", response || "Error: API Endpoint Irresponsive");
-    }
-  );
+  try {
+    const problemDescription = await getProblemDescription();
+    const modelSelect = document.getElementById("leetai-model-select") as HTMLSelectElement | null;
+    const modelName = modelSelect ? modelSelect.value : VALID_MODELS[0].name;
+
+    chrome.runtime.sendMessage(
+      { type: "SEND_MESSAGE", message, problemDescription, modelName },
+      (response: string | undefined) => {
+        removeLoading(loadingElement);
+        addMessage("ai", response || "Error: API Endpoint Irresponsive");
+      }
+    );
+  } catch (error) {
+    console.error("Error sending message:", error);
+    removeLoading(loadingElement);
+    addMessage("ai", "Sorry, there was an error processing your request. Please try again.");
+  }
 }

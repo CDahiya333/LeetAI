@@ -12,7 +12,7 @@ interface AppProps {
 
 function App({ supabase }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<{ username: string } | null>(null);
+  const [user, setUser] = useState<{ email: string } | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [screen, setScreen] = useState<"welcome" | "auth" | "apiKey" | "error">("auth");
   const [error, setError] = useState<string | null>(null);
@@ -50,9 +50,7 @@ function App({ supabase }: AppProps) {
             // User is authenticated
             console.log("User authenticated:", data.session.user);
             setUser({ 
-              username: data.session.user.user_metadata?.username || 
-                        data.session.user.email?.split('@')[0] || 
-                        "User" 
+              email: data.session.user.email || "User" 
             });
             setIsAuthenticated(true);
             setScreen(result.apiKey ? "welcome" : "apiKey");
@@ -74,8 +72,7 @@ function App({ supabase }: AppProps) {
 
   const handleLogin = (user: User) => {
     console.log("Login successful:", user);
-    const username = user.user_metadata?.username || user.email?.split('@')[0] || "User";
-    setUser({ username });
+    setUser({ email: user.email || "User" });
     setIsAuthenticated(true);
     
     // After login, check for API key and route accordingly
@@ -128,7 +125,7 @@ function App({ supabase }: AppProps) {
       return <ApiKeyScreen apiKey={apiKey || ""} onSave={handleSaveApiKey} />;
     }
     
-    return <WelcomeScreen username={user?.username || ""} />;
+    return <WelcomeScreen username={user?.email.split('@')[0] || "User"} />;
   };
 
   return (
