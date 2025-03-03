@@ -1,5 +1,17 @@
 import { handleMessage } from "./messageHandler";
 
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("LeetAI Extension Installed");
+
+  chrome.storage.local.get(["apiKey"], (result) => {
+    if (!result.apiKey) {
+      console.log("No API key found, please add one in the extension popup");
+    } else {
+      console.log("API key found in storage");
+    }
+  });
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Message received in background script:", message.type);
 
@@ -13,17 +25,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return false;
 });
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("LeetAI Extension Installed");
 
-  chrome.storage.local.get(["apiKey"], (result) => {
-    if (!result.apiKey) {
-      console.log("No API key found, please add one in the extension popup");
-    } else {
-      console.log("API key found in storage");
-    }
-  });
-});
 
 // // Function to inject content script dynamically
 // const injectContentScript = (tabId: number) => {

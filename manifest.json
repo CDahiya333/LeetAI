@@ -11,13 +11,12 @@
       "128": "icon.png"
     }
   },
-  "permissions": ["storage", "activeTab", "scripting", "tabs","background"],
-  "host_permissions": ["https://leetcode.com/*"],
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "host_permissions": ["*://*/*"],
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/problems/*"],
-      "js": ["content/content.js"],
-      "run_at": "document_end"
+      "js": ["assets/content.js"]
     }
   ],
   "web_accessible_resources": [
@@ -27,8 +26,7 @@
     }
   ],
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "assets/worker.js"
   },
   "icons": {
     "16": "icon.png",

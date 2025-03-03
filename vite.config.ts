@@ -12,7 +12,7 @@ export default defineConfig({
         {
           src: 'manifest.json', // Path to your manifest.json file
           dest: '.' // Destination directory (root of dist)
-        }
+        },
       ]
     })
   ],
