@@ -31,7 +31,7 @@ function injectStyles(): void {
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background-color: #2563eb;
+      background-color: #000000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -40,7 +40,8 @@ function injectStyles(): void {
       transition: background-color 0.3s ease;
     }
     #leetai-button:hover {
-      background-color: #1d4ed8;
+      background-color: #000000;
+      transform: scale(1.1);
     }
     
     /* Chat container styling with transitions */
@@ -169,7 +170,14 @@ function createChatUI(): void {
   // Floating button (always visible)
   const button = document.createElement("div");
   button.id = "leetai-button";
-  button.innerHTML = `<img width="50" height="50" src="https://img.icons8.com/sf-black-filled/64/bot.png" alt="bot"/>`;
+  button.innerHTML = `<svg width="50" height="50" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black Circle Background -->
+  <circle cx="32" cy="32" r="30" fill="black"/>
+  <!-- White Magnifying Glass Icon -->
+  <path fill="white" d="M27.765 42.244c-8.614 0-15.622-7.008-15.622-15.622S19.151 11 27.765 11s15.622 7.008 15.622 15.622-7.007 15.622-15.622 15.622zm0-28.398c-7.045 0-12.775 5.73-12.775 12.775s5.73 12.775 12.775 12.775 12.775-5.73 12.775-12.775-5.73-12.775-12.775-12.775z"></path>
+  <path fill="white" d="M34.869 39.146l4.014-3.738 9.286 9.114a3.164 3.164 0 01-.07 4.562l-.071.066a3.163 3.163 0 01-4.561-.257l-8.598-9.747zM27.77 34.173c-2.882 0-5.412-.876-7.656-2.526a1.002 1.002 0 01-.35-.81c.008-.461.445-.969 1.02-.959.284.005.493.153.713.308 1.837 1.302 3.832 1.971 6.275 1.971 1.875 0 4.492-.476 6.314-2.118a.98.98 0 01.638-.261.92.92 0 01.686.241c.222.209.33.527.336.735a1.02 1.02 0 01-.318.775c-1.333 1.237-4.262 2.644-7.658 2.644z"></path>
+</svg>
+`;
   container.appendChild(button);
 
   // Chat interface (initially hidden via CSS opacity and transform)
@@ -215,12 +223,20 @@ function createChatUI(): void {
 // Event Listeners Setup
 // --------------------
 function setupEventListeners(): void {
-  document.getElementById("leetai-button")?.addEventListener("click", toggleChat);
-  document.getElementById("leetai-chat-close")?.addEventListener("click", toggleChat);
-  document.getElementById("leetai-chat-send")?.addEventListener("click", sendMessage);
-  document.getElementById("leetai-chat-input")?.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.key === "Enter") sendMessage();
-  });
+  document
+    .getElementById("leetai-button")
+    ?.addEventListener("click", toggleChat);
+  document
+    .getElementById("leetai-chat-close")
+    ?.addEventListener("click", toggleChat);
+  document
+    .getElementById("leetai-chat-send")
+    ?.addEventListener("click", sendMessage);
+  document
+    .getElementById("leetai-chat-input")
+    ?.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Enter") sendMessage();
+    });
 }
 
 // Toggle chat visibility with transition
@@ -230,7 +246,9 @@ function toggleChat(): void {
     // Toggle the 'visible' class to animate appearance/disappearance
     chat.classList.toggle("visible");
     if (chat.classList.contains("visible")) {
-      (document.getElementById("leetai-chat-input") as HTMLInputElement)?.focus();
+      (
+        document.getElementById("leetai-chat-input") as HTMLInputElement
+      )?.focus();
     }
   }
 }
@@ -252,7 +270,9 @@ function addMessage(type: "user" | "ai", content: string): void {
 // --------------------
 async function getProblemDescription(): Promise<string> {
   try {
-    const metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+    const metaDescription = document.querySelector(
+      'meta[name="description"]'
+    ) as HTMLMetaElement;
     return metaDescription?.content.trim() || "No description available";
   } catch (error) {
     console.error("Error getting problem description:", error);
@@ -264,7 +284,9 @@ async function getProblemDescription(): Promise<string> {
 // Message Sending & Response Handling
 // --------------------
 async function sendMessage(): Promise<void> {
-  const input = document.getElementById("leetai-chat-input") as HTMLInputElement;
+  const input = document.getElementById(
+    "leetai-chat-input"
+  ) as HTMLInputElement;
   if (!input || !input.value.trim()) return;
 
   const userMessage = input.value.trim();
@@ -275,7 +297,9 @@ async function sendMessage(): Promise<void> {
     const loadingElement = showLoading();
     const problemDescription = await getProblemDescription();
     // Default model is gemini-2.0-flash if none selected
-    const modelSelect = document.getElementById("leetai-model-select") as HTMLSelectElement;
+    const modelSelect = document.getElementById(
+      "leetai-model-select"
+    ) as HTMLSelectElement;
     const modelName = modelSelect?.value || "gemini_flash";
 
     const payload: SendMessage = {
