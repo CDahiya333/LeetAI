@@ -12,9 +12,14 @@ export const VALID_MODELS = [
       name: 'gemini_flash',
       display: 'Gemini 2.0 Flash',
     },
+    {
+      model: 'claude 3.7',
+      name: 'claude_3.7_sonnet',
+      display: 'Claude 3.7'
+    }
   ]
   
   /**
    * Type of valid models that can be used in the application.
    */
-  export type ValidModel = 'openai_4o'| 'gemini_flash';
+  export type ValidModel = 'openai_4o'| 'gemini_flash' | 'claude_3.7_sonnet';

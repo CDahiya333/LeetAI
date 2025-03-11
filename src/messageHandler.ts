@@ -81,9 +81,10 @@ async function fetchAIResponse(
   if (selectedModel.model === "gemini-2.0-flash") {
     return await fetchGeminiResponse(prompt);
   } else if (selectedModel.model === "gpt-4o") {
-    // OpenAI Logic will be added here later
-    return `AI Response: Your question was "${userMessage}" regarding "${problemDescription}".`;
-  } else {
+    return await fetchOpenAiResponse(prompt);
+  } else if(selectedModel.model === "claude 3.7 "){
+    return await fetchClaudeResponse(prompt);
+  }else{
     throw new Error(`Model '${modelName}' support not added yet.`);
   }
 }
@@ -114,6 +115,91 @@ async function fetchGeminiResponse(curatedPrompt: string): Promise<string> {
     } else {
       // Handle cases where the error is not an Error object
       throw new Error("An unknown error occurred with the Gemini API.");
+    }
+  }
+}
+
+async function fetchOpenAiResponse(curatedPrompt: string): Promise<string> {
+  try {
+    // Get API key from storage instead of environment variables
+    const apiKey = await getApiKeyFromStorage();
+    
+    console.log("Initializing OpenAI with API key");
+    
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [{ role: "system", content: "You are an AI assistant." }, { role: "user", content: curatedPrompt }],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const text = data.choices[0]?.message?.content.trim() || "";
+    const formattedResponse = formatMarkdown(text);
+
+    console.log("Received response from OpenAI");
+    return formattedResponse;
+  } catch (error: unknown) {
+    console.error("OpenAI API error:", error);
+    
+    if (error instanceof Error) {
+      throw new Error(`OpenAI API Error: ${error.message}`);
+    } else {
+      throw new Error("An unknown error occurred with the OpenAI API.");
+    }
+  }
+}
+
+async function fetchClaudeResponse(curatedPrompt: string): Promise<string> {
+  try {
+    // Get API key from storage instead of environment variables
+    const apiKey = await getApiKeyFromStorage();
+    
+    console.log("Initializing Claude with API key");
+    
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-3.7-sonnet",
+        messages: [{ role: "user", content: curatedPrompt }],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Claude API Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const text = data.content?.trim() || "";
+    const formattedResponse = formatMarkdown(text);
+
+    console.log("Received response from Claude");
+    return formattedResponse;
+  } catch (error: unknown) {
+    console.error("Claude API error:", error);
+    
+    if (error instanceof Error) {
+      throw new Error(`Claude API Error: ${error.message}`);
+    } else {
+      throw new Error("An unknown error occurred with the Claude API.");
     }
   }
 }
