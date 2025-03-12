@@ -1,4 +1,5 @@
 import { removeLoading, showLoading } from "./loading";
+import { VALID_MODELS as models } from "../constants/valid_models";
 // import { VALID_MODELS } from "../constants/valid_models";
 console.log("LeetAI content script loaded and running!");
 
@@ -87,6 +88,17 @@ function injectStyles(): void {
   font-weight: bold;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
+}
+  /* Model Select Styling */
+  #leetai-model-select {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 5px;
+  margin-right: auto; /* This pushes the close button to the right */
+  font-size: 0.9em;
+  width: auto;
 }
 #leetai-chat-close {
   cursor: pointer;
@@ -244,28 +256,37 @@ function createChatUI(): void {
     </div>
   `;
   container.appendChild(chat);
-  // populateModelSelect();
+  populateModelSelect();
   setupEventListeners();
 }
-// function populateModelSelect(): void {
-//   console.log("populateModelSelect called, VALID_MODELS:", VALID_MODELS);
-//   const selectElement = document.getElementById("leetai-model-select") as HTMLSelectElement | null;
-//   if (!selectElement) {
-//     console.error("Model select element not found");
-//     return;
-//   }
 
-//   // Clear any existing options
-//   selectElement.innerHTML = "";
+function populateModelSelect(): void {
+  console.log("populateModelSelect called, VALID_MODELS:", models);
+  const selectElement = document.getElementById(
+    "leetai-model-select"
+  ) as HTMLSelectElement | null;
+  if (!selectElement) {
+    console.error("Model select element not found");
+    return;
+  }
 
-//   // Append an option for each valid model
-//   VALID_MODELS.forEach(model => {
-//     const option = document.createElement("option");
-//     option.value = model.name; // e.g. 'openai_4o' or 'gemini_flash'
-//     option.text = model.display;
-//     selectElement.appendChild(option);
-//   });
-// }
+  // Clear any existing options
+  selectElement.innerHTML = "";
+
+  // Append an option for each valid model
+  models.forEach((model) => {
+    const option = document.createElement("option");
+    option.value = model.name; // e.g. 'openai_4o' or 'gemini_flash'
+    option.text = model.display;
+    selectElement.appendChild(option);
+  });
+
+  // Set default selected model (first one in the list)
+  if (models.length > 0) {
+    // Store the selected model in local storage for persistence
+    chrome.storage.local.set({ selectedModel: models[0].name });
+  }
+}
 // --------------------
 // Event Listeners Setup
 // --------------------
@@ -284,6 +305,17 @@ function setupEventListeners(): void {
     ?.addEventListener("keydown", (e: KeyboardEvent) => {
       if (e.key === "Enter") sendMessage();
     });
+  const modelSelect = document.getElementById(
+    "leetai-model-select"
+  ) as HTMLSelectElement;
+  if (modelSelect) {
+    modelSelect.addEventListener("change", function () {
+      const selectedModel = modelSelect.value;
+      console.log("Model changed to:", selectedModel);
+      // Save the selected model to storage
+      chrome.storage.local.set({ selectedModel: selectedModel });
+    });
+  }
 }
 
 // Toggle chat visibility with transition
@@ -343,11 +375,13 @@ async function sendMessage(): Promise<void> {
   try {
     const loadingElement = showLoading();
     const problemDescription = await getProblemDescription();
-    // Default model is gemini-2.0-flash if none selected
-    const modelSelect = document.getElementById(
-      "leetai-model-select"
-    ) as HTMLSelectElement;
-    const modelName = modelSelect?.value || "gemini_flash";
+    
+    // Fetching Model from Chrome Local Storage
+    const modelName = await new Promise<string>((resolve) => {
+      chrome.storage.local.get(["selectedModel"], (data) => {
+        resolve(data.selectedModel || models[0].name);
+      });
+    });
 
     const payload: SendMessage = {
       type: "SEND_MESSAGE",
