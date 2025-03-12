@@ -17,8 +17,8 @@ This is a Chrome extension built with React, TypeScript, and Tailwind CSS with S
 <img width="400" alt="Screenshot 2025-03-04 at 12 32 21 AM" src="https://github.com/user-attachments/assets/086407b2-9a36-4b18-b7a7-a6d843713bfb" />
 <img width="400" alt="Screenshot 2025-03-04 at 12 32 12 AM" src="https://github.com/user-attachments/assets/b1efc333-e1a2-4177-869f-5b31d739e86a" />
 <img width="400" alt="Screenshot 2025-03-04 at 12 31 56 AM" src="https://github.com/user-attachments/assets/ad6d8928-cedc-4703-b89c-32a9331618f4" />
-<img width="463" alt="Screenshot 2025-03-04 at 12 18 45 AM" src="https://github.com/user-attachments/assets/100968dc-b320-48ff-a1a5-a74f1d75534f" />
 
+Video Demo: https://github.com/user-attachments/assets/a179cba8-d913-427c-8f9f-6a43b1ab80d9
 
 ## Building for Production
 
