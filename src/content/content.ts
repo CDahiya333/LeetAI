@@ -242,48 +242,82 @@ function injectStyles(): void {
     transform: translateX(0);
   }
 }
-  .code-block-wrapper {
-  position: relative;
+ /* Markdown paragraph styling */
+.markdown-paragraph {
   margin: 1em 0;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #ddd;
+  line-height: 1.6;
+  color: #ccc; 
 }
 
+/* Code block wrapper */
+.code-block-wrapper {
+  position: relative;
+  margin: 0.8em 0;      
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #444;  
+  background-color: #222;   
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); 
+}
+
+/* Code header (language label and copy button) */
 .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f6f8fa;
-  padding: 8px 16px;
-  border-bottom: 1px solid #ddd;
+  background-color: #333; 
+  padding: 2px 2px;      
+  border-bottom: 1px solid #444;
 }
 
+/* Code language label */
 .code-language {
   font-family: monospace;
   font-size: 12px;
-  color: #666;
+  color: #aaa;   
+  font-weight: bold;
+  margin: 0;     
 }
 
+/* Copy button styling */
 .copy-button {
-  background-color: #e6e6e6;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
+  background: linear-gradient(145deg, #222, #111);
+  border: 1px solid #444;
+  padding: 6px 6px 6px 6px; 
+  border-radius: 12px;     
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.2s;
+  color: #fff;
 }
-
 .copy-button:hover {
-  background-color: #d1d1d1;
+  background: linear-gradient(145deg, #111, #222);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
 }
 
+/* Highlight.js code styling */
 .hljs {
   margin: 0;
-  padding: 16px;
+  padding: 12px;          
   overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  font-size: 14px;
+  line-height: 1.45;      
+  tab-size: 4;
+  background-color: #222; 
+  color: #ccc;            
+  box-sizing: border-box; 
 }
+
+/* Ensure pre blocks don't wrap code unexpectedly */
+pre.hljs {
+  white-space: pre;
+  word-wrap: normal;
+  max-width: 100%;
+}
+
+
   `;
   document.head.appendChild(style);
 }

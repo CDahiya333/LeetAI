@@ -45,6 +45,10 @@ export async function formatMarkdown(text: string): Promise<string> {
     }
   });
 
+  // Add proper paragraph handling
+  md.renderer.rules.paragraph_open = () => '<p class="markdown-paragraph">';
+  md.renderer.rules.paragraph_close = () => '</p>\n';
+  
   // Process markdown and return HTML
   return md.render(text);
 }
