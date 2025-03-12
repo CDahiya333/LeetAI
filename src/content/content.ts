@@ -1,8 +1,24 @@
 import { removeLoading, showLoading } from "./loading";
-import { VALID_MODELS as models } from "../constants/valid_models";
 // import { VALID_MODELS } from "../constants/valid_models";
 console.log("LeetAI content script loaded and running!");
 
+const models = [
+  {
+    model: "gemini-2.0-flash",
+    name: "gemini_flash",
+    display: "Gemini 2.0 Flash",
+  },
+  {
+    model: "gpt-4o",
+    name: "openai_4o",
+    display: "GPT-4o",
+  },
+  {
+    model: 'claude-3.7-sonnet', 
+    name: 'claude_3.7_sonnet',
+    display: 'Claude 3.7'
+  },
+];
 interface SendMessage {
   type: "SEND_MESSAGE";
   message: string;
@@ -91,14 +107,29 @@ function injectStyles(): void {
 }
   /* Model Select Styling */
   #leetai-model-select {
-  background-color: #2a2a2a;
-  color: white;
+  background: linear-gradient(145deg, #222, #111);
+  color: #fff;
   border: 1px solid #444;
-  border-radius: 4px;
-  padding: 5px;
-  margin-right: auto; /* This pushes the close button to the right */
+  border-radius: 12px;
+
+  /* Spacing & sizing */
+  padding: 6px 28px 6px 10px; 
   font-size: 0.9em;
-  width: auto;
+  cursor: pointer;
+
+  /* Smooth transitions */
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+  outline: none; /* remove default outline */
+}
+  /* Hover & focus effects */
+#leetai-model-select:hover {
+  background: linear-gradient(145deg, #111, #222);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
+}
+#leetai-model-select:focus {
+  box-shadow: 0 0 5px rgba(248, 113, 113, 0.4);
 }
 #leetai-chat-close {
   cursor: pointer;

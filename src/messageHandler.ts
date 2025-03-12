@@ -124,7 +124,7 @@ async function fetchAIResponse(
     return await fetchGeminiResponse(prompt);
   } else if (selectedModel.model === "gpt-4o") {
     return await fetchOpenAiResponse(prompt);
-  } else if (selectedModel.model === "claude 3.7 ") {
+  } else if (selectedModel.model === "claude-3.7-sonnet") {
     return await fetchClaudeResponse(prompt);
   } else {
     throw new Error(`Model '${modelName}' support not added yet.`);
