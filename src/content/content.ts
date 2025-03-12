@@ -70,8 +70,8 @@ function injectStyles(): void {
   position: fixed;
   bottom: 80px;
   right: 20px;
-  width: 360px;
-  height: 520px;
+  width: 580px;
+  height: 540px;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -242,6 +242,48 @@ function injectStyles(): void {
     transform: translateX(0);
   }
 }
+  .code-block-wrapper {
+  position: relative;
+  margin: 1em 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f6f8fa;
+  padding: 8px 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.code-language {
+  font-family: monospace;
+  font-size: 12px;
+  color: #666;
+}
+
+.copy-button {
+  background-color: #e6e6e6;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background-color: #d1d1d1;
+}
+
+.hljs {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+}
   `;
   document.head.appendChild(style);
 }
@@ -347,6 +389,30 @@ function setupEventListeners(): void {
       chrome.storage.local.set({ selectedModel: selectedModel });
     });
   }
+
+  document.addEventListener('click', function(event) {
+    if (!event.target) return;
+    const target = event.target as HTMLElement;
+    
+    if (target.classList?.contains('copy-button')) {
+      const code = target.getAttribute('data-code');
+  
+      if (!code) return;
+      
+      navigator.clipboard.writeText(decodeURIComponent(code)).then(function() {
+        const originalText = target.textContent;
+        target.textContent = 'Copied!';
+        
+        setTimeout(function() {
+          if (originalText) {
+            target.textContent = originalText;
+          }
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+      });
+    }
+  });
 }
 
 // Toggle chat visibility with transition
