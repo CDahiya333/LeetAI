@@ -57,7 +57,27 @@ Video Demo: https://github.com/user-attachments/assets/a179cba8-d913-427c-8f9f-6
   <img src="https://github.com/user-attachments/assets/76c0f5e5-9f54-40bc-b49c-7e8f763895be" height="40" alt="react logo"  />
 </div>
 
+## Upcoming Features:- 
 
+1. Payment tiers Free, Pro, Mega
+2. Stripe Integration
+3. Code Syntax Highlighting
+4. New Model Support for OpenAI O1, O3-mini
+5. Added Support for Using locally run AI models for output generation.
+6. Cosmetics: New Loading Animation, Popup UI revamp, Direct Response streaming
+7. Chat History
+8. Increased window size for contextual understanding
+9. User Code detection
+10. Code snippet sharing
+
+## Feedback:- 
+Very optimistic about use of AI in helping people learn DSA by decreasing friction with interactive and natural UI.
+The first version of the project has been completed and will be available on Chrome Web Store very soon.
+Please feel free to experiment this and share your experience about this product.
+If you have any feedback about it, or features you want to see feel free to reach out, provided my contact links down below.
+
+Till then Keep learning 👍🏻
+    
 ## Authors
 
 - GitHub Profile:[@CDahiya333](https://github.com/CDahiya333)
