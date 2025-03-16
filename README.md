@@ -59,16 +59,15 @@ Video Demo: https://github.com/user-attachments/assets/a179cba8-d913-427c-8f9f-6
 
 ## Upcoming Features:- 
 
-1. Payment tiers Free, Pro, Mega
-2. Stripe Integration
-3. Code Syntax Highlighting
-4. New Model Support for OpenAI O1, O3-mini
-5. Added Support for Using locally run AI models for output generation.
-6. Cosmetics: New Loading Animation, Popup UI revamp, Direct Response streaming
-7. Chat History
-8. Increased window size for contextual understanding
-9. User Code detection
-10. Code snippet sharing
+1. Stripe Integration
+2. Code Syntax Highlighting
+3. New Model Support for OpenAI O1, O3-mini
+4. Added Support for Using locally run AI models for output generation.
+5. Cosmetics: New Loading Animation, Popup UI revamp, Direct Response streaming
+6. Chat History
+7. Increased window size for contextual understanding
+8. User Code detection
+9. Code snippet sharing
 
 ## Feedback:- 
 Very optimistic about use of AI in helping people learn DSA by decreasing friction with interactive and natural UI.
