@@ -1,14 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { VALID_MODELS, ValidModel } from "./constants/valid_models";
 import { HELPER_PROMPT } from "./constants/prompt";
-import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
+import MarkdownIt from "markdown-it";
+import hljs from "highlight.js";
 
-/**
- * Asynchronously format Markdown text into HTML, with line breaks and syntax highlighting.
- * @param text - The raw Markdown text to format
- * @returns Promise containing HTML with syntax highlighting
- */
 export async function formatMarkdown(text: string): Promise<string> {
   // Create a MarkdownIt instance with desired options
   const md = new MarkdownIt({
@@ -18,37 +13,37 @@ export async function formatMarkdown(text: string): Promise<string> {
     breaks: true,
     highlight: (code, lang) => {
       let highlightedCode;
-      
+
       if (lang && hljs.getLanguage(lang)) {
         try {
           highlightedCode = hljs.highlight(code, { language: lang }).value;
         } catch (err) {
-          console.error('Error highlighting code:', err);
+          console.error("Error highlighting code:", err);
           highlightedCode = hljs.highlightAuto(code).value;
         }
       } else {
         // If no language is specified, use automatic detection
         highlightedCode = hljs.highlightAuto(code).value;
       }
-      
+
       // Encode the original code for the copy button
       const encodedCode = encodeURIComponent(code);
-      
+
       // Return the highlighted code with a copy button
       return `<div class="code-block-wrapper">
                 <div class="code-header">
-                  <span class="code-language">${lang || 'auto'}</span>
+                  <span class="code-language">${lang || "auto"}</span>
                   <button class="copy-button" data-code="${encodedCode}">Copy</button>
                 </div>
                 <pre class="hljs"><code>${highlightedCode}</code></pre>
               </div>`;
-    }
+    },
   });
 
   // Add proper paragraph handling
   md.renderer.rules.paragraph_open = () => '<p class="markdown-paragraph">';
-  md.renderer.rules.paragraph_close = () => '</p>\n';
-  
+  md.renderer.rules.paragraph_close = () => "</p>\n";
+
   // Process markdown and return HTML
   return md.render(text);
 }
@@ -63,10 +58,12 @@ export function handleMessage(
   sendResponse: (response: string) => void
 ): void {
   console.log("Processing message:", message.type, "Model:", message.modelName);
-  
+
   // Type guard to check if message.modelName is a ValidModel
-  const validModel = VALID_MODELS.find((model) => model.name === message.modelName);
-  
+  const validModel = VALID_MODELS.find(
+    (model) => model.name === message.modelName
+  );
+
   if (validModel) {
     fetchAIResponse(
       message.message,
@@ -83,7 +80,11 @@ export function handleMessage(
       });
   } else {
     console.error("Invalid model name:", message.modelName);
-    sendResponse(`Error: Invalid model name '${message.modelName}'. Available models: ${VALID_MODELS.map(m => m.name).join(', ')}`);
+    sendResponse(
+      `Error: Invalid model name '${
+        message.modelName
+      }'. Available models: ${VALID_MODELS.map((m) => m.name).join(", ")}`
+    );
   }
 }
 
@@ -166,7 +167,9 @@ async function fetchGeminiResponse(curatedPrompt: string): Promise<string> {
 
     if (error instanceof Error) {
       // Now you can safely access error.message
-      throw new Error(`Gemini API Error: ${error.message},<br> 💡Try updating API Key with model`);
+      throw new Error(
+        `Gemini API Error: ${error.message},<br> 💡Try updating API Key with model`
+      );
     } else {
       // Handle cases where the error is not an Error object
       throw new Error("An unknown error occurred with the Gemini API.");
@@ -212,7 +215,9 @@ async function fetchOpenAiResponse(curatedPrompt: string): Promise<string> {
     console.error("OpenAI API error:", error);
 
     if (error instanceof Error) {
-      throw new Error(`OpenAI API Error: ${error.message},<br> 💡Try updating API Key with model`);
+      throw new Error(
+        `OpenAI API Error: ${error.message},<br> 💡Try updating API Key with model`
+      );
     } else {
       throw new Error("An unknown error occurred with the OpenAI API.");
     }
@@ -256,7 +261,9 @@ async function fetchClaudeResponse(curatedPrompt: string): Promise<string> {
     console.error("Claude API error:", error);
 
     if (error instanceof Error) {
-      throw new Error(`Claude API Error: ${error.message}, <br> 💡Try updating API Key with model`);
+      throw new Error(
+        `Claude API Error: ${error.message}, <br> 💡Try updating API Key with model`
+      );
     } else {
       throw new Error("An unknown error occurred with the Claude API.");
     }

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { LogIn, Mail, Lock } from 'lucide-react';
-import { SupabaseClient, User } from '@supabase/supabase-js';
+import React, { useState } from "react";
+import { LogIn, Mail, Lock } from "lucide-react";
+import { SupabaseClient, User } from "@supabase/supabase-js";
 
 interface LoginScreenProps {
   onLogin: (user: User) => void;
@@ -8,9 +8,13 @@ interface LoginScreenProps {
   supabase: SupabaseClient;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supabase }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen: React.FC<LoginScreenProps> = ({
+  onLogin,
+  onSignupClick,
+  supabase,
+}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +22,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
     event.preventDefault();
     setLoading(true);
     setError(null);
-    
+
     try {
       // Basic validation
       if (!email || !password) {
@@ -26,11 +30,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
         setLoading(false);
         return;
       }
-      
+
       // Login with email and password
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       if (error) {
@@ -52,19 +56,24 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8 bg-gray-950">
-      <div className="w-full max-w-sm space-y-6 bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-800">
-        <h2 className="text-3xl font-extrabold text-white text-center">Login to LeetAI</h2>
-  
+    <div className="flex h-[350px] items-center justify-center px-4 sm:px-6 lg:px-8 bg-transparent">
+      <div className="w-full max-w-sm  bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-800 -mb-18">
+        <h2 className="text-3xl font-extrabold text-white text-center">
+          Login to LeetAI
+        </h2>
+
         {error && (
           <div className="p-3 bg-red-500 bg-opacity-10 border border-red-500 text-red-400 text-sm rounded-lg">
             {error}
           </div>
         )}
-  
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-300 mb-1"
+            >
               Email
             </label>
             <div className="relative">
@@ -81,9 +90,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
               />
             </div>
           </div>
-  
+
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-300 mb-1"
+            >
               Password
             </label>
             <div className="relative">
@@ -100,7 +112,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
               />
             </div>
           </div>
-  
+
           <button
             type="submit"
             disabled={loading}
@@ -133,7 +145,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
             Login
           </button>
         </form>
-  
+
         <div className="text-center text-sm text-gray-400">
           Don&apos;t have an account?{" "}
           <button
@@ -147,7 +159,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignupClick, supab
       </div>
     </div>
   );
-  
 };
 
 export default LoginScreen;

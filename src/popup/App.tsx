@@ -121,7 +121,7 @@ function App({ supabase }: AppProps) {
     );
 
     if (screen === "error") {
-      return <ErrorScreen message={error || "An unknown error occurred"} />;
+      return <ErrorScreen message={error || "Something went Wrong !!"} />;
     }
 
     if (!isAuthenticated) {
@@ -136,9 +136,9 @@ function App({ supabase }: AppProps) {
   };
 
   return (
-    <div className="w-[400px] h-[500px] bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 flex flex-col rounded-xl shadow-lg">
-      <header className="flex justify-between items-center mb-6 pb-2 border-b border-gray-700">
-        <h1 className="text-xl font-bold text-white flex items-center">
+    <div className="w-[500px] h-[600px] bg-gradient-to-b from-gray-900 via-gray-800 to-gray-600 text-white p-6 flex flex-col rounded-xl shadow-lg">
+      <header className="flex justify-between items-center mb-6 pb-2 border-b border-gray-500">
+        <h1 className="text-xl md:text-3xl font-bold text-white flex items-center">
           <BrainCircuit className="w-6 h-6 mr-2 text-blue-400" />
           LeetAI
         </h1>
@@ -166,12 +166,12 @@ function App({ supabase }: AppProps) {
 
       <main className="flex-grow">{renderScreen()}</main>
 
-      <footer className="mt-4 pt-2 border-t border-gray-700 flex justify-between items-center text-xs text-gray-400">
+      <footer className=" hidden md:flex mt-4 flex-col justify-between items-center text-xs text-gray-400">
+        <div>Made with ❤️ by Chirag Dahiya</div>
         <div className="flex items-center">
           <Zap className="w-4 h-4 mr-1" />
-          <span>LeetAI v1.0.0</span>
+          <span>LeetAI</span>
         </div>
-        <div>Made with ❤️ for your DSA Journey</div>
       </footer>
     </div>
   );
