@@ -4,10 +4,13 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import App from "./App";
 import "./index.css";
 
-// Hardcoded Supabase credentials for Chrome extension
-// In a production app, you might want to use a more secure approach
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// console.log({
+//   SUPA_URL: import.meta.env.VITE_SUPABASE_URL,
+//   SUPA_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+// });
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error("Supabase credentials not found!");
