@@ -65,78 +65,84 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignup, onLoginClick, sup
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <div className="w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up for LeetAI</h2>
-        
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 px-4 py-8">
+      <div className="w-full max-w-md bg-gray-900 rounded-2xl shadow-lg p-8 border border-gray-800">
+        <h2 className="text-3xl font-extrabold text-center text-white mb-6">
+          Sign Up for <span className="text-blue-500">LeetAI</span>
+        </h2>
+  
         {error && (
-          <div className="mb-4 p-2 bg-red-500 bg-opacity-20 border border-red-500 rounded text-red-300 text-sm">
+          <div className="mb-4 p-3 rounded-md bg-red-600/10 border border-red-500 text-red-300 text-sm">
             {error}
           </div>
         )}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+  
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
               Email
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-500" />
-              </div>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                <Mail className="h-5 w-5" />
+              </span>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-gray-800 block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Enter your email"
               />
             </div>
           </div>
-
+  
+          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
               Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-500" />
-              </div>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                <Lock className="h-5 w-5" />
+              </span>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-gray-800 block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Create a password"
               />
             </div>
           </div>
-          
+  
+          {/* Confirm Password */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
               Confirm Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-500" />
-              </div>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                <Lock className="h-5 w-5" />
+              </span>
               <input
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="bg-gray-800 block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Confirm your password"
               />
             </div>
           </div>
-          
+  
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full flex justify-center items-center py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
             {loading ? (
               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -149,14 +155,14 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignup, onLoginClick, sup
             Sign Up
           </button>
         </form>
-        
-        <div className="mt-4 text-center">
+  
+        <div className="mt-5 text-center">
           <p className="text-sm text-gray-400">
             Already have an account?{" "}
             <button
               type="button"
               onClick={onLoginClick}
-              className="text-blue-400 hover:text-blue-300 focus:outline-none"
+              className="text-blue-400 hover:text-blue-300 transition underline underline-offset-4 focus:outline-none"
             >
               Log in
             </button>
@@ -165,6 +171,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignup, onLoginClick, sup
       </div>
     </div>
   );
+  
 };
 
 export default SignupScreen;

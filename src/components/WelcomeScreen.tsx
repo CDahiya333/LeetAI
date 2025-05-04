@@ -7,60 +7,46 @@ interface WelcomeScreenProps {
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ username }) => {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-black bg-opacity-80 backdrop-blur-md rounded-xl shadow-lg p-6 text-white font-sans">
+      {/* Header */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold">Welcome, {username}!</h2>
-        <p className="text-gray-400 mt-1">Your AI assistant for getting better at LeetCode problems</p>
-      </div>
-      
-      <div className="bg-gray-800 rounded-lg p-4 mb-4">
-        <h3 className="text-lg font-medium mb-3 flex items-center">
-          <Sparkles className="w-5 h-5 mr-2 text-yellow-400" />
-          How to use LeetAI
-        </h3>
-        <ol className="space-y-2 text-gray-300 text-sm">
-          <li className="flex items-start">
-            <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0 mt-0.5">1</span>
-            <span>Navigate to any LeetCode problem page</span>
-          </li>
-          <li className="flex items-start">
-            <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0 mt-0.5">2</span>
-            <span>Click the LeetAI icon in the bottom right corner</span>
-          </li>
-          <li className="flex items-start">
-            <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0 mt-0.5">3</span>
-            <span>Chat with AI for getting hints and guidance.</span>
-          </li>
-        </ol>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gray-800 rounded-lg p-3">
-          <div className="flex items-center mb-2">
-            <Lightbulb className="w-5 h-5 mr-2 text-yellow-400" />
-            <h4 className="font-medium">Get Hints</h4>
-          </div>
-          <p className="text-xs text-gray-400">
-            Ask for hints to make sure you get better at problem solving.
-          </p>
-        </div>
-        
-        <div className="bg-gray-800 rounded-lg p-3">
-          <div className="flex items-center mb-2">
-            <Code className="w-5 h-5 mr-2 text-green-400" />
-            <h4 className="font-medium">Code Help</h4>
-          </div>
-          <p className="text-xs text-gray-400">
-            Get help with specific parts of your code
-          </p>
-        </div>
-      </div>
-      
-      {/* <div className="mt-4 text-center">
-        <p className="text-sm text-gray-400">
-          LeetAI is ready to help with your DSA journey!
+        <h2 className="text-2xl font-bold text-white">Welcome, {username}!</h2>
+        <p className="text-gray-400 mt-1">
+          Your AI assistant for mastering LeetCode problems.
         </p>
-      </div> */}
+      </div>
+
+      {/* Tip Box */}
+      <div className="bg-[#111] border border-gray-700 rounded-lg p-4 mb-4 shadow-md">
+        <h3 className="text-lg font-medium mb-3 flex items-center text-white">
+          <Sparkles className="w-5 h-5 mr-2 text-yellow-400" />
+          How to Use
+        </h3>
+        <ul className="text-sm text-gray-300 list-disc list-inside space-y-1">
+          <li>Click the floating button to open the LeetAI chat.</li>
+          <li>Ask any DSA-related question during a problem.</li>
+          <li>Use the model dropdown to switch LLM behavior.</li>
+        </ul>
+      </div>
+
+      {/* Feature Highlights */}
+      <div className="bg-[#111] border border-gray-700 rounded-lg p-4 mb-4 shadow-md">
+        <h3 className="text-lg font-medium mb-3 flex items-center text-white">
+          <Lightbulb className="w-5 h-5 mr-2 text-orange-300" />
+          Tips for Best Results
+        </h3>
+        <ul className="text-sm text-gray-300 list-disc list-inside space-y-1">
+          <li>Give complete context like problem name or input/output.</li>
+          <li>Ask about time complexity, edge cases, and dry runs.</li>
+          <li>Use markdown or code blocks to share code snippets.</li>
+        </ul>
+      </div>
+
+      {/* Footer or Summary */}
+      <div className="mt-auto text-sm text-center text-gray-500 pt-4 border-t border-gray-700">
+        <Code className="w-4 h-4 inline mr-1 text-teal-400" />
+        Made with 💻 by the LeetAI Team
+      </div>
     </div>
   );
 };
